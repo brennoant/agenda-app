@@ -10,7 +10,9 @@ function dateToWeekday(dateStr: string): number {
 export function getAvailableSlots(fromDate: string, days: number): AvailableSlot[] {
   const store = getStore();
   const now = new Date();
-  const slots: AvailableSlot[] = [];
+  // Use Map to de-duplicate slots by (date, startTime) — defends against overlapping
+  // weekly_schedule rules for the same weekday accidentally producing duplicate slots.
+  const slotsMap = new Map<string, AvailableSlot>();
 
   for (let i = 0; i < days; i++) {
     const date = new Date(fromDate + "T00:00:00");
@@ -29,10 +31,14 @@ export function getAvailableSlots(fromDate: string, days: number): AvailableSlot
         const slotDateTime = new Date(`${dateStr}T${cursor}:00`);
         const isPast = slotDateTime.getTime() <= now.getTime();
 
+        // Strict half-open interval overlap: slot [cursor, slotEnd) overlaps block [start, end)
+        // iff cursor < end AND start < slotEnd. This ensures adjacent (touching) slots are NOT
+        // incorrectly marked as overlapping — e.g., if a block is 14:30-15:00, then slot 14:00-14:30
+        // (which ends exactly where the block starts) remains available.
         const isBlocked = store.blockedSlots.some((b) => {
           if (b.date !== dateStr) return false;
           if (b.startTime === null) return true;
-          return !(isBefore(slotEnd, b.startTime) || isBefore(b.endTime!, cursor));
+          return isBefore(cursor, b.endTime!) && isBefore(b.startTime, slotEnd);
         });
 
         const isBooked = store.appointments.some(
@@ -40,7 +46,8 @@ export function getAvailableSlots(fromDate: string, days: number): AvailableSlot
         );
 
         if (!isPast && !isBlocked && !isBooked) {
-          slots.push({ date: dateStr, startTime: cursor, endTime: slotEnd });
+          const key = `${dateStr}|${cursor}`;
+          slotsMap.set(key, { date: dateStr, startTime: cursor, endTime: slotEnd });
         }
 
         cursor = slotEnd;
@@ -48,5 +55,5 @@ export function getAvailableSlots(fromDate: string, days: number): AvailableSlot
     }
   }
 
-  return slots;
+  return Array.from(slotsMap.values());
 }

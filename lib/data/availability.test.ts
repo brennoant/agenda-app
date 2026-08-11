@@ -64,4 +64,46 @@ describe("getAvailableSlots", () => {
       { date: "2026-08-10", startTime: "14:30", endTime: "15:00" },
     ]);
   });
+
+  it("handles partial blocks with strict overlap semantics (adjacent slots remain available)", () => {
+    vi.setSystemTime(new Date("2026-08-10T08:00:00"));
+    const store = getStore();
+    store.weeklySchedule = [];
+    store.weeklySchedule.push({
+      id: "ws-1", weekday: 1, startTime: "14:00", endTime: "16:00", sessionDurationMinutes: 30,
+    });
+    // Block exactly 14:30-15:00 — should only exclude the 14:30-15:00 slot,
+    // not the adjacent 14:00-14:30 slot (which ends where block starts)
+    store.blockedSlots.push({ id: "b-1", date: "2026-08-10", startTime: "14:30", endTime: "15:00", reason: "Lunch" });
+
+    const slots = getAvailableSlots("2026-08-10", 1);
+
+    // Should return: 14:00-14:30 (adjacent, before block), NOT 14:30-15:00 (blocked), 15:00-15:30 (after block), 15:30-16:00
+    expect(slots).toEqual([
+      { date: "2026-08-10", startTime: "14:00", endTime: "14:30" },
+      { date: "2026-08-10", startTime: "15:00", endTime: "15:30" },
+      { date: "2026-08-10", startTime: "15:30", endTime: "16:00" },
+    ]);
+  });
+
+  it("de-duplicates slots when multiple weekly_schedule rules overlap for the same weekday", () => {
+    vi.setSystemTime(new Date("2026-08-10T08:00:00"));
+    const store = getStore();
+    store.weeklySchedule = [];
+    // Add two overlapping rules for the same weekday — both generating the same 14:00-14:30 slot
+    store.weeklySchedule.push({
+      id: "ws-1", weekday: 1, startTime: "14:00", endTime: "14:30", sessionDurationMinutes: 30,
+    });
+    store.weeklySchedule.push({
+      id: "ws-2", weekday: 1, startTime: "14:00", endTime: "14:30", sessionDurationMinutes: 30,
+    });
+
+    const slots = getAvailableSlots("2026-08-10", 1);
+
+    // Should return exactly one slot, not two duplicates
+    expect(slots).toEqual([
+      { date: "2026-08-10", startTime: "14:00", endTime: "14:30" },
+    ]);
+    expect(slots).toHaveLength(1);
+  });
 });
