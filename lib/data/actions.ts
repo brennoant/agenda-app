@@ -9,6 +9,7 @@ import {
   rescheduleAppointment,
   updatePaymentStatus,
 } from "./appointments";
+import { addScheduleEntry, removeScheduleEntry, WeeklyScheduleInput } from "./schedule";
 import { PaymentStatus } from "./types";
 
 export async function submitBookingAction(input: CreateBookingInput): Promise<CreateBookingResult> {
@@ -29,4 +30,14 @@ export async function rescheduleAppointmentAction(id: string, date: string, star
 export async function updatePaymentAction(id: string, paymentStatus: PaymentStatus, amountCents: number) {
   updatePaymentStatus(id, paymentStatus, amountCents);
   revalidatePath("/admin");
+}
+
+export async function addScheduleEntryAction(input: WeeklyScheduleInput) {
+  addScheduleEntry(input);
+  revalidatePath("/admin/disponibilidade");
+}
+
+export async function removeScheduleEntryAction(id: string) {
+  removeScheduleEntry(id);
+  revalidatePath("/admin/disponibilidade");
 }
