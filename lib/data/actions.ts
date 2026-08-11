@@ -10,6 +10,7 @@ import {
   updatePaymentStatus,
 } from "./appointments";
 import { addScheduleEntry, removeScheduleEntry, WeeklyScheduleInput } from "./schedule";
+import { blockSlot, unblockSlot, BlockSlotInput } from "./blocks";
 import { PaymentStatus } from "./types";
 
 export async function submitBookingAction(input: CreateBookingInput): Promise<CreateBookingResult> {
@@ -40,4 +41,16 @@ export async function addScheduleEntryAction(input: WeeklyScheduleInput) {
 export async function removeScheduleEntryAction(id: string) {
   removeScheduleEntry(id);
   revalidatePath("/admin/disponibilidade");
+}
+
+export async function blockSlotAction(input: BlockSlotInput) {
+  blockSlot(input);
+  revalidatePath("/admin/bloqueios");
+  revalidatePath("/agendar");
+}
+
+export async function unblockSlotAction(id: string) {
+  unblockSlot(id);
+  revalidatePath("/admin/bloqueios");
+  revalidatePath("/agendar");
 }
