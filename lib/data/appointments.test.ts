@@ -84,6 +84,23 @@ describe("rescheduleAppointment", () => {
       expect(result.appointment.status).toBe("reagendado");
     }
   });
+
+  it("still blocks the new slot after reschedule, but frees the original slot", () => {
+    const created = createBooking({ patientName: "Ana", patientWhatsapp: "11999999999", date: "2026-08-10", startTime: "14:00" });
+    if (!created.ok) throw new Error("setup failed");
+
+    const rescheduled = rescheduleAppointment(created.appointment.id, "2026-08-10", "14:30");
+    if (!rescheduled.ok) throw new Error("reschedule failed");
+
+    // The vacated original slot (14:00) should now be free.
+    const bookOriginalSlot = createBooking({ patientName: "Bia", patientWhatsapp: "11888888888", date: "2026-08-10", startTime: "14:00" });
+    expect(bookOriginalSlot.ok).toBe(true);
+
+    // The new slot (14:30), now occupied by the rescheduled ("reagendado") appointment,
+    // must still be blocked from a second booking.
+    const bookNewSlot = createBooking({ patientName: "Carla", patientWhatsapp: "11777777777", date: "2026-08-10", startTime: "14:30" });
+    expect(bookNewSlot.ok).toBe(false);
+  });
 });
 
 describe("updatePaymentStatus", () => {

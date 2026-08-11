@@ -41,8 +41,10 @@ export function getAvailableSlots(fromDate: string, days: number): AvailableSlot
           return isBefore(cursor, b.endTime!) && isBefore(b.startTime, slotEnd);
         });
 
+        // Any non-cancelled appointment occupies its slot — this includes "reagendado"
+        // (rescheduled appointments must still block their new slot), not just "agendado".
         const isBooked = store.appointments.some(
-          (a) => a.date === dateStr && a.startTime === cursor && a.status === "agendado"
+          (a) => a.date === dateStr && a.startTime === cursor && a.status !== "cancelado"
         );
 
         if (!isPast && !isBlocked && !isBooked) {
