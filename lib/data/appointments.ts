@@ -2,6 +2,7 @@ import { getStore, generateId } from "./store";
 import { Appointment, PaymentStatus } from "./types";
 import { getAvailableSlots } from "./availability";
 import { addMinutes } from "./time";
+import { findRuleFor } from "./schedule";
 
 export interface CreateBookingInput {
   patientName: string;
@@ -18,9 +19,7 @@ export function createBooking(input: CreateBookingInput): CreateBookingResult {
   const store = getStore();
   const weekday = new Date(input.date + "T00:00:00").getDay();
 
-  const rule = store.weeklySchedule.find(
-    (r) => r.weekday === weekday && input.startTime >= r.startTime && input.startTime < r.endTime
-  );
+  const rule = findRuleFor(store.weeklySchedule, weekday, input.startTime);
   if (!rule) return { ok: false, error: "SLOT_UNAVAILABLE" };
 
   const isAvailable = getAvailableSlots(input.date, 1).some(
@@ -75,12 +74,15 @@ export function rescheduleAppointment(id: string, newDate: string, newStartTime:
   }
 
   const weekday = new Date(newDate + "T00:00:00").getDay();
-  const rule = store.weeklySchedule.find((r) => r.weekday === weekday);
-  const duration = rule ? rule.sessionDurationMinutes : 50;
+  const rule = findRuleFor(store.weeklySchedule, weekday, newStartTime);
+  if (!rule) {
+    appt.status = previousStatus;
+    return { ok: false, error: "SLOT_UNAVAILABLE" };
+  }
 
   appt.date = newDate;
   appt.startTime = newStartTime;
-  appt.endTime = addMinutes(newStartTime, duration);
+  appt.endTime = addMinutes(newStartTime, rule.sessionDurationMinutes);
   appt.status = "reagendado";
 
   return { ok: true, appointment: appt };

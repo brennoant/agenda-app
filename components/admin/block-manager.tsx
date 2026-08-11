@@ -6,6 +6,7 @@ import { blockSlotAction, unblockSlotAction } from "@/lib/data/actions";
 
 export function BlockManager({ blocks }: { blocks: BlockedSlot[] }) {
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   return (
     <div className="mt-4 space-y-6">
@@ -41,12 +42,18 @@ export function BlockManager({ blocks }: { blocks: BlockedSlot[] }) {
           }
 
           setError(null);
-          await blockSlotAction({
+          setWarning(null);
+          const result = await blockSlotAction({
             date: String(formData.get("date")),
             startTime,
             endTime,
             reason: String(formData.get("reason")),
           });
+          if (result.affectedAppointments.length > 0) {
+            setWarning(
+              `Atenção: ${result.affectedAppointments.length} consulta(s) já marcada(s) nesse período — elas não foram canceladas automaticamente.`
+            );
+          }
         }}
         className="flex flex-wrap items-end gap-2 rounded border p-3"
       >
@@ -71,6 +78,7 @@ export function BlockManager({ blocks }: { blocks: BlockedSlot[] }) {
         </div>
         <button type="submit" className="rounded bg-emerald-700 px-3 py-1.5 text-sm text-white">Bloquear</button>
         {error && <p className="w-full text-xs text-red-600">{error}</p>}
+        {warning && <p className="w-full text-xs text-amber-700">{warning}</p>}
       </form>
     </div>
   );

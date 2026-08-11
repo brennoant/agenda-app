@@ -32,8 +32,23 @@ create table appointments (
 );
 
 -- Garante, a nível de banco, que não existam dois agendamentos ativos
--- para o mesmo horário (mesma checagem que lib/data/appointments.ts
--- faz em memória).
+-- para o mesmo horário (mesma checagem que lib/data/appointments.ts faz em
+-- memória: qualquer status diferente de 'cancelado' — incluindo
+-- 'reagendado' — ocupa o horário).
 create unique index appointments_date_start_time_active_idx
   on appointments (date, start_time)
-  where status = 'agendado';
+  where status <> 'cancelado';
+
+-- Row Level Security: sem isso, qualquer tabela do Supabase fica acessível
+-- via PostgREST usando a anon key, que é pública (vai no bundle do client).
+-- Sem policies, RLS habilitado bloqueia todo acesso por padrão até que
+-- policies explícitas sejam criadas.
+alter table weekly_schedule enable row level security;
+alter table blocked_slots enable row level security;
+alter table appointments enable row level security;
+
+-- Fase 2 TODO: adicionar policies antes de usar em produção.
+-- Sugestão: appointments permite "insert" público (pacientes agendam sem
+-- login) mas "select"/"update"/"delete" só para o usuário autenticado
+-- (a psicóloga). weekly_schedule e blocked_slots: leitura pública (o
+-- /agendar precisa calcular disponibilidade), escrita só autenticada.

@@ -59,9 +59,10 @@ export async function removeScheduleEntryAction(id: string) {
 
 export async function blockSlotAction(input: BlockSlotInput) {
   await requireAdminSession();
-  blockSlot(input);
+  const result = blockSlot(input);
   revalidatePath("/admin/bloqueios");
   revalidatePath("/agendar");
+  return result;
 }
 
 export async function unblockSlotAction(id: string) {

@@ -101,6 +101,37 @@ describe("rescheduleAppointment", () => {
     const bookNewSlot = createBooking({ patientName: "Carla", patientWhatsapp: "11777777777", date: "2026-08-10", startTime: "14:30" });
     expect(bookNewSlot.ok).toBe(false);
   });
+
+  it("uses the matching rule's duration when the weekday has more than one weekly-schedule rule", () => {
+    const store = getStore();
+    store.weeklySchedule = [];
+    store.weeklySchedule.push(
+      { id: "ws-morning", weekday: 1, startTime: "09:00", endTime: "12:00", sessionDurationMinutes: 30 },
+      { id: "ws-afternoon", weekday: 1, startTime: "14:00", endTime: "18:00", sessionDurationMinutes: 50 }
+    );
+
+    const created = createBooking({ patientName: "Ana", patientWhatsapp: "11999999999", date: "2026-08-10", startTime: "09:00" });
+    if (!created.ok) throw new Error("setup failed");
+    expect(created.appointment.endTime).toBe("09:30");
+
+    const result = rescheduleAppointment(created.appointment.id, "2026-08-10", "14:00");
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.appointment.startTime).toBe("14:00");
+      // Must reflect the afternoon rule's 50-minute duration, not the morning rule's 30.
+      expect(result.appointment.endTime).toBe("14:50");
+    }
+  });
+
+  it("rejects a reschedule into a time with no matching weekly-schedule rule instead of inventing a duration", () => {
+    const created = createBooking({ patientName: "Ana", patientWhatsapp: "11999999999", date: "2026-08-10", startTime: "14:00" });
+    if (!created.ok) throw new Error("setup failed");
+
+    const result = rescheduleAppointment(created.appointment.id, "2026-08-10", "20:00");
+
+    expect(result.ok).toBe(false);
+  });
 });
 
 describe("updatePaymentStatus", () => {

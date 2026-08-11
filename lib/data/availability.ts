@@ -43,8 +43,16 @@ export function getAvailableSlots(fromDate: string, days: number): AvailableSlot
 
         // Any non-cancelled appointment occupies its slot — this includes "reagendado"
         // (rescheduled appointments must still block their new slot), not just "agendado".
+        // Uses the same half-open interval overlap as isBlocked above (not exact-time
+        // equality) so a booking stays correctly excluded even if the weekly schedule
+        // changes later and shifts the slot grid so no slot start lines up exactly with
+        // the appointment's original startTime.
         const isBooked = store.appointments.some(
-          (a) => a.date === dateStr && a.startTime === cursor && a.status !== "cancelado"
+          (a) =>
+            a.date === dateStr &&
+            a.status !== "cancelado" &&
+            isBefore(cursor, a.endTime) &&
+            isBefore(a.startTime, slotEnd)
         );
 
         if (!isPast && !isBlocked && !isBooked) {

@@ -106,4 +106,31 @@ describe("getAvailableSlots", () => {
     ]);
     expect(slots).toHaveLength(1);
   });
+
+  it("keeps a booked appointment excluded from availability even after a weekly-schedule change shifts the slot grid", () => {
+    vi.setSystemTime(new Date("2026-08-10T08:00:00"));
+    const store = getStore();
+    store.weeklySchedule = [];
+    store.weeklySchedule.push({
+      id: "ws-1", weekday: 1, startTime: "14:00", endTime: "15:00", sessionDurationMinutes: 30,
+    });
+    store.appointments.push({
+      id: "a-1", patientName: "Ana", patientWhatsapp: "11999999999",
+      date: "2026-08-10", startTime: "14:00", endTime: "14:30",
+      status: "agendado", paymentStatus: "pendente", amountCents: 0, createdAt: new Date().toISOString(),
+    });
+
+    // Admin changes the rule's session duration from 30 to 20 minutes — this shifts the
+    // slot grid so no slot start lines up exactly with the existing booking's 14:00 start
+    // (14:20 would previously have slipped through an exact-time-equality isBooked check).
+    store.weeklySchedule[0].sessionDurationMinutes = 20;
+
+    const slots = getAvailableSlots("2026-08-10", 1);
+
+    // The booked 14:00-14:30 range must still be fully excluded: both 14:00-14:20 and
+    // 14:20-14:40 overlap it, only 14:40-15:00 should remain available.
+    expect(slots).toEqual([
+      { date: "2026-08-10", startTime: "14:40", endTime: "15:00" },
+    ]);
+  });
 });
