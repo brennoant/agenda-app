@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AvailableSlot } from "@/lib/data/types";
 import { submitBookingAction } from "@/lib/data/actions";
 
@@ -10,6 +11,7 @@ function formatDate(date: string) {
 }
 
 export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<AvailableSlot | null>(null);
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -54,6 +56,7 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
           if (!result.ok) {
             setError("Esse horário acabou de ser ocupado. Escolha outro, por favor.");
             setSelected(null);
+            router.refresh();
             return;
           }
           setConfirmed(selected);
