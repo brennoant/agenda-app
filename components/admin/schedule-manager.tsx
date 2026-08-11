@@ -50,7 +50,7 @@ export function ScheduleManager({ schedule }: { schedule: WeeklyScheduleEntry[] 
         </div>
         <div>
           <label className="block text-xs font-medium">Duração (min)</label>
-          <input type="number" name="sessionDurationMinutes" defaultValue={50} required className="w-20 rounded border px-2 py-1 text-sm" />
+          <input type="number" name="sessionDurationMinutes" defaultValue={50} min="1" required className="w-20 rounded border px-2 py-1 text-sm" />
         </div>
         <button type="submit" className="rounded bg-emerald-700 px-3 py-1.5 text-sm text-white">Adicionar</button>
       </form>

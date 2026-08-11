@@ -15,6 +15,9 @@ export function getWeeklySchedule(): WeeklyScheduleEntry[] {
 }
 
 export function addScheduleEntry(input: WeeklyScheduleInput): WeeklyScheduleEntry {
+  if (input.sessionDurationMinutes < 1) {
+    throw new Error("sessionDurationMinutes must be at least 1");
+  }
   const entry: WeeklyScheduleEntry = { id: generateId("ws"), ...input };
   getStore().weeklySchedule.push(entry);
   return entry;
