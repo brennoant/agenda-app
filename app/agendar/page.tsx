@@ -1,6 +1,8 @@
 import { getAvailableSlots } from "@/lib/data/availability";
 import { BookingFlow } from "@/components/agendar/booking-flow";
 
+export const dynamic = "force-dynamic";
+
 export default function AgendarPage() {
   const slots = getAvailableSlots(new Date().toISOString().slice(0, 10), 14);
 
