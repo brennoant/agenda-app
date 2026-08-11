@@ -27,4 +27,8 @@ describe("session token", () => {
   it("rejects undefined", () => {
     expect(isValidSessionToken(undefined)).toBe(false);
   });
+
+  it("rejects a token with an extra dot-delimited segment", () => {
+    expect(isValidSessionToken(createSessionToken() + ".x")).toBe(false);
+  });
 });

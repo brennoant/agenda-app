@@ -17,7 +17,9 @@ export function createSessionToken(): string {
 
 export function isValidSessionToken(token: string | undefined): boolean {
   if (!token) return false;
-  const [payloadB64, signature] = token.split(".");
+  const parts = token.split(".");
+  if (parts.length !== 2) return false;
+  const [payloadB64, signature] = parts;
   if (!payloadB64 || !signature) return false;
   const payload = Buffer.from(payloadB64, "base64url").toString("utf-8");
   const expected = crypto.createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
