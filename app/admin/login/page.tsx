@@ -8,19 +8,31 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50">
-      <form action={login} className="w-full max-w-sm space-y-4 rounded-lg border bg-white p-8 shadow-sm">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <form action={login} className="w-full max-w-sm space-y-4 rounded-lg border bg-white p-6 shadow-sm sm:p-8">
         <h1 className="text-lg font-semibold">Entrar</h1>
         {error && <p className="text-sm text-red-600">E-mail ou senha inválidos.</p>}
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">E-mail</label>
-          <input id="email" name="email" type="email" required className="w-full rounded-md border px-3 py-2 text-sm" />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            className="w-full rounded-md border px-3 py-2.5 text-base focus:border-slate-500 focus:ring-1 focus:ring-slate-500 focus:outline-none sm:py-2 sm:text-sm"
+          />
         </div>
         <div className="space-y-1">
           <label htmlFor="password" className="text-sm font-medium">Senha</label>
-          <input id="password" name="password" type="password" required className="w-full rounded-md border px-3 py-2 text-sm" />
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            className="w-full rounded-md border px-3 py-2.5 text-base focus:border-slate-500 focus:ring-1 focus:ring-slate-500 focus:outline-none sm:py-2 sm:text-sm"
+          />
         </div>
-        <button type="submit" className="w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white">
+        <button type="submit" className="w-full rounded-md bg-slate-900 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800">
           Entrar
         </button>
       </form>

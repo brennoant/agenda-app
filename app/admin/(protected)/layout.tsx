@@ -11,11 +11,11 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="flex items-center justify-between border-b bg-white px-6 py-4">
-        <nav className="flex gap-4 text-sm font-medium">
-          <a href="/admin">Agenda</a>
-          <a href="/admin/disponibilidade">Disponibilidade</a>
-          <a href="/admin/bloqueios">Bloqueios</a>
+      <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b bg-white px-4 py-3 sm:px-6 sm:py-4">
+        <nav className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium text-slate-700">
+          <a href="/admin" className="whitespace-nowrap hover:text-slate-950">Agenda</a>
+          <a href="/admin/disponibilidade" className="whitespace-nowrap hover:text-slate-950">Disponibilidade</a>
+          <a href="/admin/bloqueios" className="whitespace-nowrap hover:text-slate-950">Bloqueios</a>
         </nav>
         <form action={logout}>
           <button type="submit" className="text-sm text-slate-500 hover:underline">
@@ -23,7 +23,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
           </button>
         </form>
       </header>
-      <main className="p-6">{children}</main>
+      <main className="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
   );
 }

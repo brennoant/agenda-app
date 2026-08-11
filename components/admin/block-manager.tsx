@@ -12,12 +12,12 @@ export function BlockManager({ blocks }: { blocks: BlockedSlot[] }) {
     <div className="mt-4 space-y-6">
       <ul className="space-y-2">
         {blocks.map((b) => (
-          <li key={b.id} className="flex items-center justify-between rounded border p-3 text-sm">
+          <li key={b.id} className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
             <span>
               {b.date} {b.startTime ? `${b.startTime}–${b.endTime}` : "(dia inteiro)"} — {b.reason}
             </span>
             <form action={async () => { await unblockSlotAction(b.id); }}>
-              <button type="submit" className="text-xs text-red-600 underline">remover</button>
+              <button type="submit" className="text-sm text-red-600 underline sm:text-xs">remover</button>
             </form>
           </li>
         ))}
@@ -55,30 +55,37 @@ export function BlockManager({ blocks }: { blocks: BlockedSlot[] }) {
             );
           }
         }}
-        className="flex flex-wrap items-end gap-2 rounded border p-3"
+        className="grid grid-cols-2 gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:flex sm:flex-wrap sm:items-end sm:gap-2"
       >
-        <p className="w-full text-xs text-slate-500">
+        <p className="col-span-2 text-xs text-slate-500">
           Deixe início e fim em branco para bloquear o dia inteiro, ou preencha os dois para bloquear apenas um horário.
         </p>
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className="block text-xs font-medium">Data</label>
-          <input type="date" name="date" required className="rounded border px-2 py-1 text-sm" />
+          <input type="date" name="date" required className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1" />
         </div>
         <div>
           <label className="block text-xs font-medium">Início (opcional)</label>
-          <input type="time" name="startTime" className="rounded border px-2 py-1 text-sm" />
+          <input type="time" name="startTime" className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1" />
         </div>
         <div>
           <label className="block text-xs font-medium">Fim (opcional)</label>
-          <input type="time" name="endTime" className="rounded border px-2 py-1 text-sm" />
+          <input type="time" name="endTime" className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1" />
         </div>
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className="block text-xs font-medium">Motivo</label>
-          <input type="text" name="reason" placeholder="Feriado, folga..." className="rounded border px-2 py-1 text-sm" />
+          <input
+            type="text"
+            name="reason"
+            placeholder="Feriado, folga..."
+            className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1"
+          />
         </div>
-        <button type="submit" className="rounded bg-emerald-700 px-3 py-1.5 text-sm text-white">Bloquear</button>
-        {error && <p className="w-full text-xs text-red-600">{error}</p>}
-        {warning && <p className="w-full text-xs text-amber-700">{warning}</p>}
+        <button type="submit" className="col-span-2 rounded bg-emerald-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 sm:col-span-1 sm:py-1.5">
+          Bloquear
+        </button>
+        {error && <p className="col-span-2 text-xs text-red-600">{error}</p>}
+        {warning && <p className="col-span-2 text-xs text-amber-700">{warning}</p>}
       </form>
     </div>
   );

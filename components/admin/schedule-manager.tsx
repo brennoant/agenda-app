@@ -10,12 +10,12 @@ export function ScheduleManager({ schedule }: { schedule: WeeklyScheduleEntry[] 
     <div className="mt-4 space-y-6">
       <ul className="space-y-2">
         {schedule.map((entry) => (
-          <li key={entry.id} className="flex items-center justify-between rounded border p-3 text-sm">
+          <li key={entry.id} className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
             <span>
               {WEEKDAY_LABELS[entry.weekday]}: {entry.startTime}–{entry.endTime} ({entry.sessionDurationMinutes} min/sessão)
             </span>
             <form action={async () => { await removeScheduleEntryAction(entry.id); }}>
-              <button type="submit" className="text-xs text-red-600 underline">remover</button>
+              <button type="submit" className="text-sm text-red-600 underline sm:text-xs">remover</button>
             </form>
           </li>
         ))}
@@ -30,11 +30,11 @@ export function ScheduleManager({ schedule }: { schedule: WeeklyScheduleEntry[] 
             sessionDurationMinutes: Number(formData.get("sessionDurationMinutes")),
           });
         }}
-        className="flex flex-wrap items-end gap-2 rounded border p-3"
+        className="grid grid-cols-2 gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:flex sm:flex-wrap sm:items-end sm:gap-2"
       >
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className="block text-xs font-medium">Dia</label>
-          <select name="weekday" className="rounded border px-2 py-1 text-sm">
+          <select name="weekday" className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1">
             {WEEKDAY_LABELS.map((label, i) => (
               <option key={i} value={i}>{label}</option>
             ))}
@@ -42,17 +42,26 @@ export function ScheduleManager({ schedule }: { schedule: WeeklyScheduleEntry[] 
         </div>
         <div>
           <label className="block text-xs font-medium">Início</label>
-          <input type="time" name="startTime" required className="rounded border px-2 py-1 text-sm" />
+          <input type="time" name="startTime" required className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1" />
         </div>
         <div>
           <label className="block text-xs font-medium">Fim</label>
-          <input type="time" name="endTime" required className="rounded border px-2 py-1 text-sm" />
+          <input type="time" name="endTime" required className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-auto sm:py-1" />
         </div>
         <div>
           <label className="block text-xs font-medium">Duração (min)</label>
-          <input type="number" name="sessionDurationMinutes" defaultValue={50} min="1" required className="w-20 rounded border px-2 py-1 text-sm" />
+          <input
+            type="number"
+            name="sessionDurationMinutes"
+            defaultValue={50}
+            min="1"
+            required
+            className="w-full rounded border border-slate-300 px-2 py-2 text-sm sm:w-20 sm:py-1"
+          />
         </div>
-        <button type="submit" className="rounded bg-emerald-700 px-3 py-1.5 text-sm text-white">Adicionar</button>
+        <button type="submit" className="col-span-2 rounded bg-emerald-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 sm:col-span-1 sm:py-1.5">
+          Adicionar
+        </button>
       </form>
     </div>
   );

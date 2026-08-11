@@ -26,8 +26,8 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
 
   if (confirmed) {
     return (
-      <div className="mt-8 rounded-lg border border-emerald-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-emerald-900">Consulta confirmada!</h2>
+      <div className="mt-6 rounded-xl border border-emerald-200 bg-white p-5 shadow-sm sm:mt-8 sm:p-6">
+        <h2 className="font-display text-xl font-medium text-emerald-950 sm:text-2xl">Consulta confirmada!</h2>
         <p className="mt-2 text-emerald-800">
           {formatDate(confirmed.date)} às {confirmed.startTime}
         </p>
@@ -41,7 +41,7 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
   if (selected) {
     return (
       <form
-        className="mt-8 space-y-4 rounded-lg border border-emerald-200 bg-white p-6"
+        className="mt-6 space-y-4 rounded-xl border border-emerald-200 bg-white p-5 shadow-sm sm:mt-8 sm:p-6"
         onSubmit={async (e) => {
           e.preventDefault();
           setSubmitting(true);
@@ -71,7 +71,7 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-emerald-200 px-3 py-2.5 text-base text-emerald-950 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none sm:py-2 sm:text-sm"
           />
         </div>
         <div>
@@ -81,17 +81,21 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
             value={whatsapp}
             onChange={(e) => setWhatsapp(e.target.value)}
             placeholder="(11) 91234-5678"
-            className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-emerald-200 px-3 py-2.5 text-base text-emerald-950 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none sm:py-2 sm:text-sm"
           />
         </div>
-        <div className="flex gap-2">
-          <button type="button" onClick={() => setSelected(null)} className="rounded-md border px-4 py-2 text-sm">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => setSelected(null)}
+            className="order-2 rounded-md border border-emerald-200 px-4 py-2.5 text-sm text-emerald-800 sm:order-1"
+          >
             Voltar
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            className="order-1 rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50 sm:order-2"
           >
             {submitting ? "Confirmando..." : "Confirmar agendamento"}
           </button>
@@ -101,7 +105,7 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
   }
 
   return (
-    <div className="mt-8 space-y-6">
+    <div className="mt-6 space-y-6 sm:mt-8">
       {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       {Object.keys(byDate).length === 0 && (
         <p className="text-emerald-700">Nenhum horário disponível nos próximos dias.</p>
@@ -109,12 +113,12 @@ export function BookingFlow({ slots }: { slots: AvailableSlot[] }) {
       {Object.entries(byDate).map(([date, daySlots]) => (
         <div key={date}>
           <h3 className="text-sm font-medium capitalize text-emerald-900">{formatDate(date)}</h3>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-2 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
             {daySlots.map((slot) => (
               <button
                 key={slot.startTime}
                 onClick={() => setSelected(slot)}
-                className="rounded-md border border-emerald-300 bg-white px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100"
+                className="rounded-md border border-emerald-300 bg-white px-3 py-2.5 text-sm font-medium text-emerald-800 transition hover:border-emerald-400 hover:bg-emerald-100 sm:py-2 sm:font-normal"
               >
                 {slot.startTime}
               </button>
