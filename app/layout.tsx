@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Manrope, Fraunces } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const fraunces = Fraunces({
@@ -20,15 +16,16 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Agenda — Protótipo de agendamento para psicóloga",
-  description: "Sistema de agendamento de consultas para uma psicóloga autônoma.",
+  title: "Milla Stadler — Agendar consulta",
+  description:
+    "Agende sua consulta com Milla Stadler, psicóloga clínica (CRP 08/46944). Psicoterapia com escuta e acolhimento, online e presencial.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${manrope.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
